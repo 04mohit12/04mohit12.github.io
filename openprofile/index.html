@@ -1,0 +1,875 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#f6f7fb">
+  <meta name="description" content="OpenProfile helps teams understand their data through profiling, statistics and data quality analysis.">
+  <title>OpenProfile — Understand your data</title>
+
+  <style>
+    :root {
+      --bg: #f6f7fb;
+      --surface: #ffffff;
+      --surface-soft: #f9f9ff;
+      --text: #20243a;
+      --muted: #737b96;
+      --accent: #6558df;
+      --accent-hover: #5145ca;
+      --accent-soft: #efedff;
+      --border: #e5e8f2;
+      --success: #18a879;
+      --shadow: 0 8px 28px rgba(31, 38, 75, 0.045);
+    }
+
+    [data-theme="dark"] {
+      --bg: #101322;
+      --surface: #191d30;
+      --surface-soft: #20243a;
+      --text: #edf0ff;
+      --muted: #a2abc5;
+      --accent: #9388ff;
+      --accent-hover: #aaa2ff;
+      --accent-soft: #29264b;
+      --border: #30364d;
+      --success: #43d6a2;
+      --shadow: 0 8px 28px rgba(0, 0, 0, 0.14);
+    }
+
+    * { box-sizing: border-box; }
+
+    html {
+      scroll-behavior: smooth;
+      scroll-padding-top: 90px;
+    }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: Inter, -apple-system, BlinkMacSystemFont,
+        "Segoe UI", sans-serif;
+      line-height: 1.65;
+      transition: background .2s, color .2s;
+    }
+
+    a { color: inherit; text-decoration: none; }
+    button { font: inherit; }
+
+    .container {
+      width: min(1120px, 90%);
+      margin: auto;
+    }
+
+    .navbar {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .nav-inner {
+      min-height: 72px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 24px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 11px;
+      font-size: 1.05rem;
+      font-weight: 800;
+      letter-spacing: -.4px;
+    }
+
+    .brand-icon {
+      width: 38px;
+      height: 38px;
+      display: grid;
+      place-items: center;
+      color: white;
+      background: var(--accent);
+      border-radius: 11px;
+      font-size: 1.1rem;
+      box-shadow: 0 4px 12px rgba(101, 88, 223, .2);
+    }
+
+    .brand small {
+      display: block;
+      color: var(--muted);
+      font-size: .57rem;
+      font-weight: 600;
+      letter-spacing: 1.6px;
+      line-height: 1.4;
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 28px;
+    }
+
+    .nav-links a {
+      color: var(--muted);
+      font-size: .9rem;
+      transition: color .2s;
+    }
+
+    .nav-links a:hover,
+    .nav-links a.active {
+      color: var(--accent);
+    }
+
+    .nav-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .theme-btn, .menu-btn {
+      width: 39px;
+      height: 39px;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      color: var(--text);
+      border-radius: 10px;
+      cursor: pointer;
+    }
+
+    .menu-btn { display: none; }
+
+    .button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 11px 17px;
+      border: 1px solid transparent;
+      border-radius: 9px;
+      font-size: .9rem;
+      font-weight: 650;
+      cursor: pointer;
+      transition: transform .18s, background .18s, border-color .18s;
+    }
+
+    .button:hover { transform: translateY(-1px); }
+
+    .button-primary {
+      color: #fff;
+      background: var(--accent);
+      box-shadow: 0 4px 12px rgba(101, 88, 223, .17);
+    }
+
+    .button-primary:hover { background: var(--accent-hover); }
+
+    .button-secondary {
+      color: var(--text);
+      background: var(--surface);
+      border-color: var(--border);
+    }
+
+    .hero { padding: 94px 0 76px; }
+
+    .hero-grid {
+      display: grid;
+      grid-template-columns: 1.05fr .95fr;
+      align-items: center;
+      gap: 65px;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 9px;
+      color: var(--accent);
+      font-size: .73rem;
+      font-weight: 750;
+      letter-spacing: 1.8px;
+      text-transform: uppercase;
+    }
+
+    .dot {
+      width: 7px;
+      height: 7px;
+      display: inline-block;
+      background: var(--success);
+      border-radius: 50%;
+    }
+
+    h1 {
+      max-width: 620px;
+      margin: 20px 0;
+      font-size: clamp(2.6rem, 5.2vw, 4.2rem);
+      line-height: 1.12;
+      letter-spacing: -2.6px;
+    }
+
+    h1 span { color: var(--accent); }
+
+    .hero-copy {
+      max-width: 540px;
+      color: var(--muted);
+      font-size: 1.05rem;
+    }
+
+    .hero-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 27px;
+    }
+
+    .hero-note {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      margin-top: 23px;
+      color: var(--muted);
+      font-size: .79rem;
+    }
+
+    .preview {
+      padding: 17px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 17px;
+      box-shadow: var(--shadow);
+      transform: rotate(1deg);
+    }
+
+    .preview-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 5px 4px 16px;
+      border-bottom: 1px solid var(--border);
+      font-size: .76rem;
+      font-weight: 700;
+    }
+
+    .preview-label {
+      color: var(--muted);
+      font-size: .68rem;
+      font-weight: 500;
+    }
+
+    .preview-status {
+      color: var(--success);
+      background: color-mix(in srgb, var(--success) 10%, transparent);
+      border-radius: 6px;
+      padding: 4px 8px;
+      font-size: .66rem;
+    }
+
+    .stat-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 11px;
+      margin: 15px 0;
+    }
+
+    .stat {
+      width: 100%;
+      padding: 15px;
+      text-align: left;
+      color: var(--text);
+      font: inherit;
+      background: var(--surface-soft);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      cursor: pointer;
+      transition: border-color .18s, transform .18s, box-shadow .18s;
+    }
+
+    .stat:hover, .stat[aria-pressed="true"] {
+      border-color: var(--accent);
+      box-shadow: 0 4px 14px rgba(101, 88, 223, .09);
+    }
+
+    .stat:hover { transform: translateY(-2px); }
+
+    .stat:focus-visible, .mini-table tbody tr:focus-visible {
+      outline: 3px solid var(--accent);
+      outline-offset: 2px;
+    }
+
+    .preview-detail {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      margin-top: 13px;
+      padding: 12px 13px;
+      color: var(--muted);
+      background: var(--surface-soft);
+      border: 1px solid var(--border);
+      border-radius: 9px;
+      font-size: .75rem;
+    }
+
+    .preview-detail strong {
+      display: block;
+      margin-bottom: 2px;
+      color: var(--text);
+      font-size: .78rem;
+    }
+
+    .detail-mark {
+      display: grid;
+      flex: 0 0 28px;
+      width: 28px;
+      height: 28px;
+      place-items: center;
+      color: var(--accent);
+      background: var(--accent-soft);
+      border-radius: 8px;
+      font-weight: 800;
+    }
+
+    .mini-table tbody tr {
+      cursor: pointer;
+      transition: background .15s;
+    }
+
+    .mini-table tbody tr:hover,
+    .mini-table tbody tr[aria-selected="true"] {
+      background: var(--accent-soft);
+    }
+
+    .preview-hint { margin: 8px 0 0; color: var(--muted); font-size: .68rem; }
+
+    .stat-label {
+      color: var(--muted);
+      font-size: .69rem;
+    }
+
+    .stat-value {
+      display: block;
+      margin-top: 4px;
+      font-size: 1.55rem;
+      font-weight: 800;
+      letter-spacing: -.7px;
+    }
+
+    .mini-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: .72rem;
+    }
+
+    .mini-table th, .mini-table td {
+      padding: 10px 7px;
+      border-bottom: 1px solid var(--border);
+      text-align: left;
+    }
+
+    .mini-table th {
+      color: var(--muted);
+      font-size: .65rem;
+      font-weight: 650;
+    }
+
+    .pill {
+      display: inline-block;
+      padding: 3px 7px;
+      color: var(--success);
+      background: color-mix(in srgb, var(--success) 11%, transparent);
+      border-radius: 5px;
+      font-size: .65rem;
+    }
+
+    section { padding: 67px 0; }
+
+    .section-heading {
+      max-width: 660px;
+      margin-bottom: 32px;
+    }
+
+    h2 {
+      margin: 12px 0;
+      font-size: clamp(1.8rem, 3vw, 2.5rem);
+      line-height: 1.2;
+      letter-spacing: -1px;
+    }
+
+    .section-copy {
+      color: var(--muted);
+      font-size: .97rem;
+    }
+
+    .features {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 18px;
+    }
+
+    .feature {
+      padding: 25px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 13px;
+      transition: transform .2s, border-color .2s, box-shadow .2s;
+    }
+
+    .feature:hover {
+      transform: translateY(-4px);
+      border-color: var(--accent);
+      box-shadow: var(--shadow);
+    }
+
+    .feature-icon {
+      width: 43px;
+      height: 43px;
+      display: grid;
+      place-items: center;
+      color: var(--accent);
+      background: var(--accent-soft);
+      border-radius: 11px;
+      font-size: 1.2rem;
+    }
+
+    .feature h3 { margin: 19px 0 8px; font-size: 1.04rem; }
+    .feature p { margin: 0; color: var(--muted); font-size: .9rem; }
+
+    .workflow {
+      background: var(--surface);
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .steps {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 28px;
+    }
+
+    .step-number {
+      display: grid;
+      width: 38px;
+      height: 38px;
+      place-items: center;
+      color: var(--accent);
+      background: var(--accent-soft);
+      border-radius: 10px;
+      font-weight: 800;
+    }
+
+    .step h3 { margin: 15px 0 7px; font-size: 1rem; }
+    .step p { margin: 0; color: var(--muted); font-size: .9rem; }
+
+    .cta {
+      padding: 43px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 25px;
+      background: var(--accent-soft);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+    }
+
+    .cta h2 { font-size: 1.8rem; }
+    .cta p { color: var(--muted); margin-bottom: 0; }
+
+    footer {
+      padding: 28px 0;
+      border-top: 1px solid var(--border);
+    }
+
+    .footer-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+      color: var(--muted);
+      font-size: .82rem;
+    }
+
+    .footer-links { display: flex; gap: 20px; }
+    .footer-links a:hover { color: var(--accent); }
+
+    .reveal {
+      opacity: 0;
+      transform: translateY(15px);
+      transition: opacity .5s ease, transform .5s ease;
+    }
+
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    a:focus-visible, button:focus-visible {
+      outline: 3px solid var(--accent);
+      outline-offset: 3px;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        scroll-behavior: auto !important;
+        transition-duration: .01ms !important;
+        animation-duration: .01ms !important;
+      }
+      .reveal { opacity: 1; transform: none; }
+    }
+
+    @media (max-width: 850px) {
+      .hero-grid { grid-template-columns: 1fr; gap: 38px; }
+      .preview { max-width: 560px; transform: none; }
+      .features { grid-template-columns: repeat(2, 1fr); }
+    }
+
+    @media (max-width: 600px) {
+      .nav-inner { min-height: 65px; }
+      .menu-btn { display: inline-block; }
+      .nav-links {
+        display: none;
+        position: absolute;
+        top: 65px;
+        left: 0;
+        right: 0;
+        padding: 18px 5%;
+        background: var(--surface);
+        border-bottom: 1px solid var(--border);
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 17px;
+      }
+      .nav-links.open { display: flex; }
+      .nav-actions .button { display: none; }
+      .hero { padding: 64px 0 48px; }
+      h1 { letter-spacing: -1.5px; }
+      section { padding: 48px 0; }
+      .features, .steps { grid-template-columns: 1fr; }
+      .cta { padding: 27px; align-items: flex-start; flex-direction: column; }
+      .footer-inner { align-items: flex-start; flex-direction: column; }
+    }
+  </style>
+</head>
+
+<body>
+  <header class="navbar">
+    <div class="container nav-inner">
+      <a class="brand" href="#home" aria-label="OpenProfile home">
+        <span class="brand-icon">◈</span>
+        <span>OpenProfile<small>DATA INTELLIGENCE</small></span>
+      </a>
+
+      <nav class="nav-links" id="navLinks" aria-label="Main navigation">
+        <a href="#features">Features</a>
+        <a href="#workflow">How it works</a>
+        <a href="https://github.com/04mohit12/OpenProfile"
+           target="_blank" rel="noopener noreferrer">GitHub ↗</a>
+      </nav>
+
+      <div class="nav-actions">
+        <button class="theme-btn" id="themeToggle"
+          type="button" aria-label="Switch to dark theme"
+          title="Toggle theme">☾</button>
+        <a class="button button-primary" href="http://127.0.0.1:8000/">
+          Open workspace ↗
+        </a>
+        <button class="menu-btn" id="menuToggle"
+          type="button" aria-label="Open navigation"
+          aria-expanded="false">☰</button>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero" id="home">
+      <div class="container hero-grid">
+        <div class="reveal">
+          <div class="eyebrow"><span class="dot"></span> Data quality workspace</div>
+          <h1>Understand your data.<br><span>Make it reliable.</span></h1>
+          <p class="hero-copy">
+            Explore datasets, inspect column statistics, and uncover data
+            quality issues before they become bigger problems.
+          </p>
+          <div class="hero-actions">
+            <a class="button button-primary" href="http://127.0.0.1:8000/">
+              Open OpenProfile <span>→</span>
+            </a>
+            <a class="button button-secondary" href="#features">
+              Explore features ↓
+            </a>
+          </div>
+          <div class="hero-note">
+            <span class="dot"></span>
+            Open-source project · Built for practical data profiling
+          </div>
+        </div>
+
+        <div class="preview reveal" aria-label="Interactive data profiling preview">
+          <div class="preview-top">
+            <span>Dataset overview <span class="preview-label">/ Sample</span></span>
+            <span class="preview-status">● Profile summary</span>
+          </div>
+
+          <div class="stat-grid">
+            <button class="stat" type="button" data-stat="records" aria-pressed="true">
+              <span class="stat-label">Total records</span>
+              <span class="stat-value">12,480</span>
+            </button>
+            <button class="stat" type="button" data-stat="columns" aria-pressed="false">
+              <span class="stat-label">Total columns</span>
+              <span class="stat-value">18</span>
+            </button>
+            <button class="stat" type="button" data-stat="completeness" aria-pressed="false">
+              <span class="stat-label">Completeness</span>
+              <span class="stat-value">96.8%</span>
+            </button>
+            <button class="stat" type="button" data-stat="nulls" aria-pressed="false">
+              <span class="stat-label">Fields with nulls</span>
+              <span class="stat-value">4</span>
+            </button>
+          </div>
+
+          <table class="mini-table">
+            <thead>
+              <tr><th>Column</th><th>Type</th><th>Completeness</th></tr>
+            </thead>
+            <tbody>
+              <tr tabindex="0" role="button" aria-selected="false" data-column="customer_id"><td>customer_id</td><td>Integer</td><td><span class="pill">100%</span></td></tr>
+              <tr tabindex="0" role="button" aria-selected="false" data-column="email"><td>email</td><td>String</td><td><span class="pill">98.2%</span></td></tr>
+              <tr tabindex="0" role="button" aria-selected="false" data-column="city"><td>city</td><td>String</td><td><span class="pill">92.6%</span></td></tr>
+            </tbody>
+          </table>
+          <p class="preview-hint">Tip: select a metric or column to see what it means.</p>
+          <div class="preview-detail" id="previewDetail" aria-live="polite">
+            <span class="detail-mark" id="detailMark">↗</span>
+            <div><strong id="detailTitle">Total records</strong><span id="detailText">12,480 rows are included in this illustrative dataset.</span></div>
+          </div>
+          <p class="preview-label">Illustrative figures for demonstration only.</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="features">
+      <div class="container">
+        <div class="section-heading reveal">
+          <div class="eyebrow">Built around your data</div>
+          <h2>Get a clearer picture of every dataset.</h2>
+          <p class="section-copy">
+            Start with the basics, then inspect individual fields to understand
+            what your data contains and where it needs attention.
+          </p>
+        </div>
+
+        <div class="features">
+          <article class="feature reveal">
+            <div class="feature-icon">▤</div>
+            <h3>Dataset overview</h3>
+            <p>Review record counts, column counts, completeness, and missing-value summaries in one place.</p>
+          </article>
+          <article class="feature reveal">
+            <div class="feature-icon">⌕</div>
+            <h3>Column exploration</h3>
+            <p>Search, sort, and inspect fields to understand their types, distinct values, and available statistics.</p>
+          </article>
+          <article class="feature reveal">
+            <div class="feature-icon">✓</div>
+            <h3>Data quality checks</h3>
+            <p>Identify missing values and review data quality indicators to help guide further investigation.</p>
+          </article>
+          <article class="feature reveal">
+            <div class="feature-icon">⇧</div>
+            <h3>Flexible file uploads</h3>
+            <p>Bring CSV, TXT, XLSX, or XLS files into the profiling workspace.</p>
+          </article>
+          <article class="feature reveal">
+            <div class="feature-icon">⌁</div>
+            <h3>Delimiter handling</h3>
+            <p>Work with delimited text files and confirm the appropriate separator when needed.</p>
+          </article>
+          <article class="feature reveal">
+            <div class="feature-icon">◷</div>
+            <h3>Large dataset focus</h3>
+            <p>Designed with scalable processing in mind, with ongoing work to improve large-file profiling.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="workflow" id="workflow">
+      <div class="container">
+        <div class="section-heading reveal">
+          <div class="eyebrow">A straightforward workflow</div>
+          <h2>From file to useful insights.</h2>
+          <p class="section-copy">
+            A simple starting point for understanding the shape and quality of your data.
+          </p>
+        </div>
+
+        <div class="steps">
+          <article class="step reveal">
+            <div class="step-number">01</div>
+            <h3>Upload a dataset</h3>
+            <p>Select a supported file from your computer and bring it into the workspace.</p>
+          </article>
+          <article class="step reveal">
+            <div class="step-number">02</div>
+            <h3>Run the profile</h3>
+            <p>Let OpenProfile inspect the dataset and calculate the statistics it supports.</p>
+          </article>
+          <article class="step reveal">
+            <div class="step-number">03</div>
+            <h3>Explore the results</h3>
+            <p>Review the overview and investigate individual columns that need attention.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="container">
+        <div class="cta reveal">
+          <div>
+            <div class="eyebrow">Ready to explore?</div>
+            <h2>Start with a dataset you know.</h2>
+            <p>Open the workspace and see what your data reveals.</p>
+          </div>
+          <a class="button button-primary" href="http://127.0.0.1:8000/">
+            Go to workspace →
+          </a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="container footer-inner">
+      <a class="brand" href="#home">
+        <span class="brand-icon">◈</span>
+        <span>OpenProfile<small>DATA INTELLIGENCE</small></span>
+      </a>
+      <span>Open-source data profiling · Apache-2.0 license</span>
+      <div class="footer-links">
+        <a href="#features">Features</a>
+        <a href="https://github.com/04mohit12/OpenProfile"
+           target="_blank" rel="noopener noreferrer">GitHub ↗</a>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    const root = document.documentElement;
+    const themeToggle = document.getElementById("themeToggle");
+    const menuToggle = document.getElementById("menuToggle");
+    const navLinks = document.getElementById("navLinks");
+
+    // The preview uses sample figures to demonstrate how the workspace can be explored.
+    const detailTitle = document.getElementById("detailTitle");
+    const detailText = document.getElementById("detailText");
+    const detailMark = document.getElementById("detailMark");
+    const metricDetails = {
+      records: ["Total records", "12,480 rows are included in this illustrative dataset.", "↗"],
+      columns: ["Total columns", "18 fields are available to inspect in the sample profile.", "▤"],
+      completeness: ["Completeness", "96.8% of the sample's field values are populated; the remaining values need review.", "✓"],
+      nulls: ["Fields with nulls", "4 columns contain at least one missing value in this example.", "!"],
+      customer_id: ["customer_id · Integer", "Shown as 100% complete in this sample. A real profile would include the actual dataset statistics.", "#"],
+      email: ["email · String", "Shown as 98.2% complete. Missing email values may need review depending on your data rules.", "@"],
+      city: ["city · String", "Shown as 92.6% complete. This field has more missing values than the other sample columns.", "⌕"]
+    };
+
+    function showPreviewDetail(key, selectedElement, selector) {
+      const details = metricDetails[key];
+      if (!details) return;
+      detailTitle.textContent = details[0];
+      detailText.textContent = details[1];
+      detailMark.textContent = details[2];
+      document.querySelectorAll(selector).forEach(element => {
+        const selected = element === selectedElement;
+        if (selector === ".stat") element.setAttribute("aria-pressed", String(selected));
+        else element.setAttribute("aria-selected", String(selected));
+      });
+    }
+
+    document.querySelectorAll(".stat").forEach(button => {
+      button.addEventListener("click", () => {
+        showPreviewDetail(button.dataset.stat, button, ".stat");
+        document.querySelectorAll(".mini-table tbody tr").forEach(row => row.setAttribute("aria-selected", "false"));
+      });
+    });
+
+    document.querySelectorAll(".mini-table tbody tr").forEach(row => {
+      const selectRow = () => {
+        showPreviewDetail(row.dataset.column, row, ".mini-table tbody tr");
+        document.querySelectorAll(".stat").forEach(button => button.setAttribute("aria-pressed", "false"));
+      };
+      row.addEventListener("click", selectRow);
+      row.addEventListener("keydown", event => {
+        if (event.key === "Enter" || event.key === " ") {
+          event.preventDefault();
+          selectRow();
+        }
+      });
+    });
+
+    themeToggle.addEventListener("click", () => {
+      const dark = root.getAttribute("data-theme") !== "dark";
+      root.setAttribute("data-theme", dark ? "dark" : "light");
+      themeToggle.textContent = dark ? "☀" : "☾";
+      themeToggle.setAttribute(
+        "aria-label",
+        dark ? "Switch to light theme" : "Switch to dark theme"
+      );
+      document.querySelector('meta[name="theme-color"]').content =
+        dark ? "#101322" : "#f6f7fb";
+    });
+
+    menuToggle.addEventListener("click", () => {
+      const isOpen = navLinks.classList.toggle("open");
+      menuToggle.setAttribute("aria-expanded", String(isOpen));
+      menuToggle.setAttribute(
+        "aria-label",
+        isOpen ? "Close navigation" : "Open navigation"
+      );
+      menuToggle.textContent = isOpen ? "✕" : "☰";
+    });
+
+    navLinks.querySelectorAll("a").forEach(link => {
+      link.addEventListener("click", () => {
+        navLinks.classList.remove("open");
+        menuToggle.setAttribute("aria-expanded", "false");
+        menuToggle.textContent = "☰";
+      });
+    });
+
+    const observer = new IntersectionObserver(entries => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add("visible");
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.12 });
+
+    document.querySelectorAll(".reveal").forEach(element => {
+      observer.observe(element);
+    });
+
+    const sectionLinks = document.querySelectorAll('.nav-links a[href^="#"]');
+    const sections = document.querySelectorAll("main section[id]");
+
+    const activeObserver = new IntersectionObserver(entries => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          sectionLinks.forEach(link => {
+            link.classList.toggle(
+              "active",
+              link.getAttribute("href") === `#${entry.target.id}`
+            );
+          });
+        }
+      });
+    }, { rootMargin: "-25% 0px -65% 0px" });
+
+    sections.forEach(section => activeObserver.observe(section));
+  </script>
+</body>
+</html>
